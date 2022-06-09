@@ -1,0 +1,26 @@
+[
+	{
+		"GlYear": 2021,
+		"GlMonth": "202107",
+		"JournalId": "5651",
+		"TransactionDescription": "Acc 065-000 12135798, 14/4/2021, Re",
+		"AccountNumber": "A-ZZZ-1111",
+		"ObjectCode": "1111",
+		"AccountDescription": "AP Batch 5651",
+		"Amount": 810.0,
+		"ReportingUnit": "0",
+		"CompanyNumber": 1
+	},
+	{
+		"GlYear": 2021,
+		"GlMonth": "202107",
+		"JournalId": "5651",
+		"TransactionDescription": "Acc 065-000 12135798, 30/4/2021, Re",
+		"AccountNumber": "A-ZZZ-1111",
+		"ObjectCode": "1111",
+		"AccountDescription": "AP Batch 5651",
+		"Amount": 20000.0,
+		"ReportingUnit": "0",
+		"CompanyNumber": 1
+	}
+]

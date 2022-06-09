@@ -1,0 +1,68 @@
+[
+	{
+		"guardianRole": 1,
+		"edId": "013500021",
+		"guardianId": "013500021|1|1",
+		"guardianSalutation": "MS",
+		"guardianLastName": "ABEL",
+		"guardianFirstName": "DEBBIE LEAH",
+		"guardianPhone": null,
+		"guardianMobile": null,
+		"guardianEmail": null
+	},
+	{
+		"guardianRole": 2,
+		"edId": "013500021",
+		"guardianId": "013500021|2|1",
+		"guardianSalutation": "MR",
+		"guardianLastName": "SALMON",
+		"guardianFirstName": "DANIEL",
+		"guardianPhone": null,
+		"guardianMobile": null,
+		"guardianEmail": null
+	},
+	{
+		"guardianRole": 1,
+		"edId": "02392092",
+		"guardianId": "02392092|1|1",
+		"guardianSalutation": "MR",
+		"guardianLastName": "SIDLER",
+		"guardianFirstName": "ROBERT",
+		"guardianPhone": null,
+		"guardianMobile": null,
+		"guardianEmail": null
+	},
+	{
+		"guardianRole": 2,
+		"edId": "02392092",
+		"guardianId": "02392092|2|1",
+		"guardianSalutation": null,
+		"guardianLastName": null,
+		"guardianFirstName": null,
+		"guardianPhone": null,
+		"guardianMobile": null,
+		"guardianEmail": null
+	},
+	{
+		"guardianRole": 1,
+		"edId": "031100002",
+		"guardianId": "031100002|1|1",
+		"guardianSalutation": "MRS",
+		"guardianLastName": "GOLDSMITH",
+		"guardianFirstName": "JUDITH ADELE",
+		"guardianPhone": "0885754249",
+		"guardianMobile": null,
+		"guardianEmail": null
+	},
+	{
+		"guardianRole": 2,
+		"edId": "031100002",
+		"guardianId": "031100002|2|1",
+		"guardianSalutation": "MR",
+		"guardianLastName": "GOLDSMITH",
+		"guardianFirstName": "PHILLIP ROSS",
+		"guardianPhone": "0885754249",
+		"guardianMobile": null,
+		"guardianEmail": null
+	}
+]

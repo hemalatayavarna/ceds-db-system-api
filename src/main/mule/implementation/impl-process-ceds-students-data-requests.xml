@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="impl-process-ceds-students-data-request:students-process:subflow" doc:id="189c9fe4-e2cb-401e-b0e2-a55f5851adb2" >
+		<logger level="INFO" doc:name="Log Start Get Students Implementation" doc:id="9e1ce883-70b9-4c74-8ba1-b64b216b37bb" message="Start Get Students Implementation"/>
+		<ee:transform doc:name="Set Variables: page, limit, offset, lastUpdatedOn, format, edid" doc:id="01a0fbdc-58c7-46dc-a04a-f539998758cd" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="page" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.page) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="limit" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.limit) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="offset" ><![CDATA[%dw 2.0
+output application/java
+---
+(trim(attributes.queryParams.page) - 1)*trim(attributes.queryParams.limit)]]></ee:set-variable>
+				<ee:set-variable variableName="lastUpdatedOn" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'last-updated-on']]></ee:set-variable>
+				<ee:set-variable variableName="format" ><![CDATA[%dw 2.0
+import p from Mule
+output application/java
+---
+if ( attributes.headers.'Accept' == p('accept.contentType.csv') ) {
+	value: p('response.contentType.csv')
+}
+else
+{
+	value: p('response.contentType.json')
+}]]></ee:set-variable>
+				<ee:set-variable variableName="edid" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'edid']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sys-ceds-students-database:get-countries:subflow" doc:id="564b75f9-ce82-4dfe-b382-d773e8d2a315" name="sys-ceds-students-database:get-countries:subflow"/>
+		<ee:transform doc:name="Set Variable: dbOutCountries" doc:id="68c95cde-ed64-4c0c-9f77-9dc1ff7ff902" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="dbOutCountries" ><![CDATA[%dw 2.0
+output application/json
+---
+payload filter (!(($.Country contains "OBSOLETE")) or (($.Country contains "SUPPLEMENTARY"))) map((item,index) ->
+{
+	"absCode": item.ABS_Code,
+	"countryName": item.Country,
+	"countryId": item.Country_ID
+})]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sys-ceds-students-database:get-students:subflow" doc:id="7654b3f2-0c02-459a-b6eb-1bd79f05f775" name="sys-ceds-students-database:get-students:subflow"/>
+		<ee:transform doc:name="Transform to Students CDM" doc:id="7ebf6099-2461-4c8e-b8c5-f721cbc8b8c4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+import getGender from modules::getAllFunctions
+import setTrueOrFalse from modules::getAllFunctions
+import getCedsYearLevel from modules::getAllFunctions
+import getCountryName from modules::getAllFunctions
+var countryMap= vars.countryMapData
+---
+payload map ( item , index ) -> {
+	edId: item.EDID,
+	lastName: item.Last_Name,
+	middleName: item.Middle_Name,
+	firstName: item.First_Name,
+	preferredName: item.Preferred_Name,
+	gender: getGender(item.Gender_ID),
+	birthDate: item.Birth_Date,
+	cypc: setTrueOrFalse(item.CYPC_ID),
+	iesFlag: setTrueOrFalse(item.IsInternationalStudent),
+	hasCustodyOrder: setTrueOrFalse(item.HasCustodyOrder),
+	hasInterventionOrder: setTrueOrFalse(item.HasInterventionOrder),
+	birthCountry: getCountryName(vars.dbOutCountries,item.ABS_Country_Of_Birth_ID),
+	lastUpdatedOn: item.Last_Update_Date
+	
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="readDWLFile" ><![CDATA[%dw 2.0
+output application/java
+var fileName="modules/$(vars.format.value).dwl"
+---
+readUrl("classpath://" ++ fileName, 'text/plain')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:dynamic-evaluate doc:name="Dynamic Evaluate Content Type" doc:id="38db8e4a-25d3-480d-8f51-cde4a50f3b1e" expression="#[vars.readDWLFile]" />
+		<logger level="INFO" doc:name="Log End Get Students Implementation" doc:id="d270a85f-a09d-41ca-b7f6-dcbe7463d1cb" message="End Get Students Implementation"/>
+	</sub-flow>
+	<sub-flow name="impl-process-ceds-guardians-data-request:guardians-process:subflow" doc:id="34166ac0-d54e-4d27-8297-ea8e677e4bfe" >
+		<logger level="INFO" doc:name="Log Start Get Guardians Implementation" doc:id="fcbb848c-721e-45c7-9394-593c0968349f" message="Start Get Guardians Implementation"/>
+		<ee:transform doc:name="Set Variables: page, limit, offset, lastUpdatedOn, format, edid" doc:id="f2b0495a-14b9-4213-afc3-a1f8c85e003d">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="page"><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.page) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="limit"><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.limit) as Number default 300]]></ee:set-variable>
+				<ee:set-variable variableName="offset"><![CDATA[%dw 2.0
+output application/java
+---
+(trim(attributes.queryParams.page) - 1)*trim(attributes.queryParams.limit)]]></ee:set-variable>
+				<ee:set-variable variableName="lastUpdatedOn"><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'last-updated-on']]></ee:set-variable>
+				<ee:set-variable variableName="format"><![CDATA[%dw 2.0
+import p from Mule
+output application/java
+---
+if ( attributes.headers.'Accept' == p('accept.contentType.csv') ) {
+	value: p('response.contentType.csv')
+}
+else
+{
+	value: p('response.contentType.json')
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sys-ceds-students-database:get-guardians:subflow" doc:id="08841f8c-cc1f-436a-ab49-5d91579a5620" name="sys-ceds-students-database:get-guardians:subflow"/>
+		<ee:transform doc:name="Transform to Guardians CDM" doc:id="98aa9ec1-878b-4250-b6a8-d3e965e854f6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map(item,index) -> {
+	guardianRole: item.Guardian_No,
+	edId: item.Student_ID,
+	guardianId: item.Family_Parent_Guardian_ID,
+    guardianSalutation: item.Family_Parent_Guardian_Title,
+    guardianLastName: item.Family_Parent_Guardian_Family_Name,
+    guardianFirstName: item.Family_Parent_Guardian_Given_Names,
+    guardianPhone: item.Family_Parent_Guardian_Phone,
+    guardianMobile: item.Family_Parent_Guardian_Mobile,
+    guardianEmail: item.Family_Parent_Guardian_Email
+    
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="readDWLFile" ><![CDATA[%dw 2.0
+output application/java
+var fileName="modules/$(vars.format.value).dwl"
+---
+readUrl("classpath://" ++ fileName, 'text/plain')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:dynamic-evaluate doc:name="Dynamic Evaluate Content Type" doc:id="695d2842-62f4-4d99-98aa-9693d34c46ed" expression="#[vars.readDWLFile]" />
+		<logger level="INFO" doc:name="Log End Get Guardians Implementation" doc:id="9c78be88-8dab-4173-82c6-869b0529ac10" message="End Get Guardians Implementation" />
+	</sub-flow>
+	<sub-flow name="impl-process-ceds-enrolments-data-request:enrolments-process:subflow" doc:id="5c25de64-080d-4cf2-9846-b303b1bf1987" >
+		<logger level="INFO" doc:name="Log Start Get Enrolments Implementation" doc:id="36b237b7-7632-41ce-9cab-8eeccc8ea45f" message="Start Get Enrolments Implementation" />
+		<ee:transform doc:name="Set Variables: page, limit, offset, lastUpdatedOn, format, edid" doc:id="72aa0365-1eff-4f5d-8210-b8dae8da35a0" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="page" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.page) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="limit" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.limit) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="offset" ><![CDATA[%dw 2.0
+output application/java
+---
+(trim(attributes.queryParams.page) - 1)*trim(attributes.queryParams.limit)]]></ee:set-variable>
+				<ee:set-variable variableName="lastUpdatedOn" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'last-updated-on']]></ee:set-variable>
+				<ee:set-variable variableName="format" ><![CDATA[%dw 2.0
+import p from Mule
+output application/java
+---
+if ( attributes.headers.'Accept' == p('accept.contentType.csv') ) {
+	value: p('response.contentType.csv')
+}
+else
+{
+	value: p('response.contentType.json')
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="sys-ceds-students-database:get-enrolments:subflow" doc:id="f31e734b-eaf6-4e95-9c30-3757a6cd7158" name="sys-ceds-students-database:get-enrolments:subflow"/>
+		<ee:transform doc:name="Transform to Enrolments CDM" doc:id="fe13aca1-2b4e-4a28-8b6f-ed29d443cb62" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import setTrueOrFalse from modules::getAllFunctions
+import getCedsYearLevel from modules::getAllFunctions
+---
+payload map (item, index) -> {
+	edId: item.Student_ID,
+	isPrimary: setTrueOrFalse(item.Multiple_Enrolment_RN),
+	rollClass: item.Roll_Class,
+	studentRowNumber: item.Multiple_Enrolment_RN,
+	enrolmentId: item.Enrolment_ID,
+	enrolmentEndDate: item.Date_Left,
+	enrolmentStartDate: item.Date_Enrolled,
+	studentStatus: item.Enrolment_Status_ID,
+	orgUnitId: item.Org_Unit_ID,
+	isDisable: setTrueOrFalse(item.Disability_Status_ID),
+	campusOrgUnitId: item.Campus_Org_Unit_ID,
+	yearLevel: getCedsYearLevel(item.Year_Level_ID)
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="readDWLFile" ><![CDATA[%dw 2.0
+output application/java
+var fileName="modules/$(vars.format.value).dwl"
+---
+readUrl("classpath://" ++ fileName, 'text/plain')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:dynamic-evaluate doc:name="Dynamic Evaluate Content Type" doc:id="7a6d1516-bd45-431b-a220-df6b9e3b8902" expression="#[vars.readDWLFile]" />
+		<logger level="INFO" doc:name="Log End Get Enrolments Implementation" doc:id="264018e9-7a9a-4451-ae5f-24738bbf8109" message="End Get Enrolments Implementation"/>
+	</sub-flow>
+	
+	</mule>

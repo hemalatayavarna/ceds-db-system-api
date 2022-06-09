@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="CEDS-CDM" format="json">
+      <types:shape format="weave" example="examples/get-ceds-db-trial-balance-valid-response.json"><![CDATA[%dw 2.0
+
+type CEDS_CDM = Array<{|  month: String,   scenario: String,   consolidationNode: String,   reportingUnit: String,   localAccount: String,   icRelatedParties: String,   investmentCost: String,   company: String,   glSource: String,   layer: String,   movement: String,   localAccountCategory: String,   localTrialBalances: Number {"typeId": "double"},   localAccountCode: String,   localAccountDescription: String|}> {"example": "[{\\\"month\\\":\\\"202110\\\",\\\"scenario\\\":\\\"ACT\\\",\\\"consolidationNode\\\":\\\"99\\\",\\\"reportingUnit\\\":\\\"DEPT\\\",\\\"localAccount\\\":\\\"001-71111-0104\\\",\\\"icRelatedParties\\\":\\\"TP\\\",\\\"investmentCost\\\":\\\"99\\\",\\\"company\\\":\\\"_\\\",\\\"glSource\\\":\\\"EDSAS\\\",\\\"layer\\\":\\\"01\\\",\\\"movement\\\":\\\"99_CLO\\\",\\\"localAccountCategory\\\":\\\"05\\\",\\\"localTrialBalances\\\":2213040.1800,\\\"localAccountCode\\\":\\\"71111\\\",\\\"localAccountDescription\\\":\\\"SALARIES AND WAGES - TEACHERS\\\"},{\\\"month\\\":\\\"202110\\\",\\\"scenario\\\":\\\"ACT\\\",\\\"consolidationNode\\\":\\\"99\\\",\\\"reportingUnit\\\":\\\"DEPT\\\",\\\"localAccount\\\":\\\"001-71111-0106\\\",\\\"icRelatedParties\\\":\\\"TP\\\",\\\"investmentCost\\\":\\\"99\\\",\\\"company\\\":\\\"_\\\",\\\"glSource\\\":\\\"EDSAS\\\",\\\"layer\\\":\\\"01\\\",\\\"movement\\\":\\\"99_CLO\\\",\\\"localAccountCategory\\\":\\\"05\\\",\\\"localTrialBalances\\\":2469069.5300,\\\"localAccountCode\\\":\\\"71111\\\",\\\"localAccountDescription\\\":\\\"SALARIES AND WAGES - TEACHERS\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="studentStatus" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#e22299fd-67aa-46b9-baa0-15131bd6dc31"/>
+  <types:enrichment select="#01a0fbdc-58c7-46dc-a04a-f539998758cd"/>
+  <types:enrichment select="#1c4e6749-7375-4fea-b2ad-1101628bf418"/>
+  <types:enrichment select="#861223ba-54bb-4353-956b-7dd5146f3e64"/>
+  <types:enrichment select="#14f0801a-fcbb-42e6-97df-c292f60b6fa2"/>
+  <types:enrichment select="#c7c2056f-77e6-4dc1-9fb4-1c498ad4a031"/>
+  <types:enrichment select="#98aa9ec1-878b-4250-b6a8-d3e965e854f6"/>
+  <types:enrichment select="#72aa0365-1eff-4f5d-8210-b8dae8da35a0"/>
+  <types:enrichment select="#f2b0495a-14b9-4213-afc3-a1f8c85e003d"/>
+</types:mule>

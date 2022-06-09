@@ -1,0 +1,36 @@
+{
+	"_meta": {
+		"pageNumber": 1,
+		"limit": 2,
+		"totalRecords": 2,
+		"totalPages": 1
+	},
+	"payload": [
+			{
+				"year": 2021,
+				"month": "202107",
+				"glSource": "EDSAS",
+				"journalId": "5651",		
+				"transactionDescription": "Acc 065-000 12135798, 14/4/2021, Re",
+				"accountNumber": "A-ZZZ-1111",
+				"objectCode": "1111",
+				"accountDescription": "AP Batch 5651",
+				"amount": 810.0,
+				"reportingUnit": "0",
+				"companyNumber": 1
+			},
+			{
+				"year": 2021,
+				"month": "202107",
+				"glSource": "EDSAS",
+				"journalId": "5651",		
+				"transactionDescription": "Acc 065-000 12135798, 30/4/2021, Re",
+				"accountNumber": "A-ZZZ-1111",
+				"objectCode": "1111",
+				"accountDescription": "AP Batch 5651",
+				"amount": 20000.0,
+				"reportingUnit": "0",
+				"companyNumber": 1
+			}
+		]
+}

@@ -1,0 +1,2 @@
+edId,isPrimary,rollClass,studentRowNumber,enrolmentId,enrolmentEndDate,enrolmentStartDate,studentStatus,orgUnitId,isDisable,campusOrgUnitId,yearLevel
+013500021,true,LFT03,1,013500021-0663,2003-04-28T00:00:00,2000-07-25T00:00:00,L,0663,false,0663,Year 3

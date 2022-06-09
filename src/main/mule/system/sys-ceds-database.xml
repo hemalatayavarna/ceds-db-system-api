@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="system-ceds-database:get-trialbalance:subflow"
+		doc:id="8b53a685-9a38-4eb5-ac12-be2ef58ae133">
+		<logger level="INFO"
+			doc:name="Log Start CEDS Database Trial Balance"
+			doc:id="07acdfe8-f124-4bcb-ba92-6bb344a2c0ab"
+			message="Log Start CEDS Database Trial Balance" />
+		<ee:transform doc:name="Set SQL Query" doc:id="e0109c13-edcb-44ca-bfc2-0c3c656e7a63" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sqlQuery" ><![CDATA[%dw 2.0
+output application/java
+---
+'SELECT [Month]
+      ,[Scenario]
+      ,[ConsolidationNode]
+      ,[ReportingUnit]
+      ,[LocalAccount]
+      ,[IcRelatedParties]
+      ,[InvestmentCost]
+      ,[Company]
+      ,[GlSource]
+      ,[Layer]
+      ,[Movement]
+      ,[LocalTrialBalances]
+      ,[LocalAccountCode]
+      ,[LocalAccountDescription]
+      ,[LocalAccountCategory]
+  FROM [CEDS].[dbo].[vw_GLBalances]
+  WHERE GlYear= $(vars.year) AND GlMonth= $(vars.month)
+  ORDER BY KeyValue
+OFFSET $(vars.offset) ROWS FETCH NEXT $(vars.sqlQueryLimit) ROWS ONLY']]></ee:set-variable>
+				<ee:set-variable variableName="sqlQueryLog" ><![CDATA[%dw 2.0
+output application/java
+---
+'Query Parameters for the TB SQL Query: GlYear= $(vars.year) AND GlMonth= $(vars.month)
+  ORDER BY KeyValue
+OFFSET $(vars.offset) ROWS FETCH NEXT $(vars.sqlQueryLimit) ROWS ONLY']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log SQL Query Params" doc:id="532f5b5c-de5b-4250-ae70-1f548789a2b7" message="#[vars.sqlQueryLog]"/>
+
+		<db:select doc:name="Select Trial Balance Data" doc:id="b4485717-a3c5-4347-bdd4-9dc4a959e645" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}">
+			<reconnect frequency="${ceds.db.reconnection.frequency}" count="${ceds.db.reconnection.attempts}" />
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database Trial Balance" doc:id="0a900665-e8f1-4f4b-b550-185fea2e672b" message="Log End CEDS Database Trial Balance" />
+	</sub-flow>
+	<sub-flow name="system-ceds-database:get-transactions:subflow" doc:id="a947a996-2aec-4f13-8f3e-5cdc446a2104">
+		<logger level="INFO" doc:name="Log Start CEDS Database Transactions" doc:id="69c516a7-b13d-454c-8536-494e7d5c0c5c" message="Start CEDS Database Transactions" />
+		<ee:transform doc:name="Set SQL Query" doc:id="1c4e6749-7375-4fea-b2ad-1101628bf418">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="sqlQuery"><![CDATA[%dw 2.0
+output application/java
+---
+'  SELECT [GLYear]
+	  ,[GLMonth]
+      ,[JournalId]
+      ,[TransactionDescription]
+      ,[AccountNumber]
+      ,[ObjectCode]
+      ,[AccountDescription]
+      ,[Amount]
+      ,[ReportingUnit]
+      ,[CompanyNumber]
+  FROM [CEDS].[dbo].[vw_GLTransactions]
+  WHERE GlYear=$(vars.sqlQueryParams.year) and [ObjectCode] IN ($(vars.sqlQueryParams.objectCode)) and ReportingUnit=$(vars.sqlQueryParams.reportingUnit)
+ORDER BY KeyValue
+OFFSET $(vars.sqlQueryParams.offset) ROWS FETCH NEXT $(vars.sqlQueryLimit) ROWS ONLY']]></ee:set-variable>
+				<ee:set-variable variableName="sqlQueryLog" ><![CDATA[%dw 2.0
+output application/java
+---
+'Query Parameters for the TB SQL Query: GlYear=$(vars.sqlQueryParams.year) and [ObjectCode] IN ($(vars.sqlQueryParams.objectCode)) and ReportingUnit=$(vars.sqlQueryParams.reportingUnit)
+ORDER BY KeyValue
+OFFSET $(vars.sqlQueryParams.offset) ROWS FETCH NEXT $(vars.sqlQueryLimit) ROWS ONLY']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log SQL Query Params" doc:id="89b08aad-33d3-4102-b9a9-ddbd27d4a3b9" message="#[vars.sqlQueryLog]"/>
+		<db:select doc:name="Select Transactions Data" doc:id="76119954-4924-4b9c-8fea-e0300cc4445c" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}">
+			<reconnect frequency="${ceds.db.reconnection.frequency}" count="${ceds.db.reconnection.attempts}" />
+			<db:sql><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		
+</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database Transactions" doc:id="71735f33-9cec-414f-b0fa-e6e3fe798c72" message="End CEDS Database Transactions" />
+	</sub-flow>
+	<sub-flow name="system-ceds-database:get-trialbalance-count:subflow" doc:id="3bf8fe3d-2204-4a7a-9b32-4d81e48e9b7d" >
+		<logger level="INFO" doc:name="Log Start CEDS Database Trial Balance Records Count" doc:id="33894533-7a0e-4b0e-af4c-1d1a2a4bb1c4" message="Start CEDS Database Trial Balance Records Count"/>
+		<ee:transform doc:name="Set SQL Query" doc:id="650b86eb-6329-4de4-803d-23353196565e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sqlQuery" ><![CDATA[%dw 2.0
+output application/java
+---
+'select * from [vw_GLBalances] where GlYear=$(vars.year) and GlMonth=$(vars.month)']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Record Count" doc:id="eb3aeb1b-7f83-4ef4-8478-3e98a9405d10" config-ref="Database_Config">
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Get Record Count" doc:id="861223ba-54bb-4353-956b-7dd5146f3e64" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="filteredRowCount" ><![CDATA[%dw 2.0
+output application/json
+var filteredPayload=payload filter not (($.Company == 6 or $.Company == 7) or($."LocalAccount" contains p('constant.digit.5110')))
+---
+sizeOf(filteredPayload)]]></ee:set-variable>
+				<ee:set-variable variableName="unfilteredRowCount" ><![CDATA[%dw 2.0
+output application/java
+---
+sizeOf(payload)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log End CEDS Database Trial Balance Records Count" doc:id="19f9d382-036f-4efb-81cc-cf0f9142072c" message="End CEDS Database Trial Balance Records Count"/>
+	</sub-flow>
+	<sub-flow name="system-ceds-database:get-transactions-count:subflow" doc:id="b5550bd8-4262-4811-ac40-3ddec1e55c78" >
+		<logger level="INFO" doc:name="Log Start CEDS Database Transactions Records Count" doc:id="0efad9f4-bf6d-4ab4-96cb-3d80e35bc278" message="Start CEDS Database Transactions Records Count" />
+		<ee:transform doc:name="Set SQL Query" doc:id="d4d7b59f-3c01-4633-ae7a-e71cb0db8dcc">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sqlQuery"><![CDATA[%dw 2.0
+output application/java
+---
+'SELECT count(*) from [vw_GLTransactions] where GlYear=$(vars.sqlQueryParams.year) and [ObjectCode] IN ($(vars.sqlQueryParams.objectCode)) and ReportingUnit=$(vars.sqlQueryParams.reportingUnit)']]></ee:set-variable>
+				<ee:set-variable variableName="sqlQueryLog" ><![CDATA[%dw 2.0
+output application/java
+---
+'Query Parameters for the TB count SQL Query: GlYear=$(vars.sqlQueryParams.year) and [ObjectCode] IN ($(vars.sqlQueryParams.objectCode)) and ReportingUnit=$(vars.sqlQueryParams.reportingUnit)']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log SQL Query Params" doc:id="c1f53423-164d-48b0-8890-e28e1abe56bf" message="#[vars.sqlQueryLog]"/>
+		<db:select doc:name="Select Record Count" doc:id="3c034423-dc2f-46d0-8758-98905a50d45a" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}" target="unfilteredRowCount" targetValue='#[payload[0].""]'>
+			<reconnect frequency="${ceds.db.reconnection.frequency}" count="${ceds.db.reconnection.attempts}" />
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database Transactions Records Count" doc:id="084f0cd3-c29b-4552-8c75-f68e65eabeba" message="End CEDS Database Transactions Records Count" />
+	</sub-flow>
+
+</mule>

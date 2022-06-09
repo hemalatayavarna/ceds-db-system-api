@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+<apikit:config name="ceds-db-system-api-config" api="ceds-db-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+<db:config name="Database_Config" doc:name="Database Config" doc:id="58c62b2e-769a-4a17-aa03-ce5aff6b5d23" >
+		<db:mssql-connection host="${ceds.db.host}" port="${ceds.db.port}" user="${secure::ceds.db.username}" password="${secure::ceds.db.password}" databaseName="${secure::ceds.db.name}" >
+			<reconnection >
+				<reconnect-forever frequency="${ceds.db.reconnection.frequency}" />
+			</reconnection>
+		</db:mssql-connection>
+	</db:config>
+	    <http:listener-config name="ceds-system-api-httpListenerConfig">
+        <http:listener-connection host="${http.private.host}" port="${http.private.port}" readTimeout="${http.read.timeout}" connectionIdleTimeout="${http.connection.idle.timeout}"/>
+    </http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="7f286182-4751-45b8-9207-62ecb5aad711" file="config\app-config-${env}.properties" />
+	<secure-properties:config name="Secure_Properties_Dev-Config" doc:name="Secure Properties Config" doc:id="a1710ebf-158f-4f40-8fed-6e85d416e693" file="config\app-config-${env}.properties" key="${secure.key}">
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<jms:config name="JMS_Config_Topic" doc:name="JMS Config" doc:id="c3f58b17-49fc-49aa-8cbb-667d790830f7" >
+		<jms:generic-connection specification="JMS_2_0" username="${mq.broker.username}" password="${mq.broker.password}">
+			<reconnection>
+				<reconnect-forever frequency="${mq.reconnection.frequency}" />
+			</reconnection>
+			<jms:connection-factory >
+				<jms:jndi-connection-factory connectionFactoryJndiName="ConnectionFactory">
+					<jms:name-resolver-builder jndiInitialContextFactory="org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory" jndiProviderUrl="${mq.broker.url}" />
+				</jms:jndi-connection-factory>
+			</jms:connection-factory>
+		</jms:generic-connection>
+		<jms:consumer-config >
+			<jms:consumer-type >
+				<jms:topic-consumer shared="true" />
+			</jms:consumer-type>
+		</jms:consumer-config>
+		<jms:producer-config persistentDelivery="true" timeToLive="${mq.timetolive}" priority="${mq.priority}"/>
+	</jms:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="90cdf699-1752-4806-92a7-017d6ac95e12" file="config/app-config-global.properties" />
+
+
+</mule>
+	

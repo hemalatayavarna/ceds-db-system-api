@@ -1,0 +1,16 @@
+[
+    {
+        "edId": "013500021",
+        "isPrimary": true,
+        "rollClass": "LFT03",
+        "studentRowNumber": 1,
+        "enrolmentId": "013500021-0663",
+        "enrolmentEndDate": "2003-04-28T00:00:00",
+        "enrolmentStartDate": "2000-07-25T00:00:00",
+        "studentStatus": "L",
+        "orgUnitId": "0663",
+        "isDisable": false,
+        "campusOrgUnitId": "0663",
+        "yearLevel": "Year 3"
+    }
+]

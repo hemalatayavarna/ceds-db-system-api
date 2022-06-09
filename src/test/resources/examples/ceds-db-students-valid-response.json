@@ -1,0 +1,50 @@
+[
+	{
+		"ABS_Country_Of_Birth_ID": "9231",
+		"HasInterventionOrder": null,
+		"Birth_Date": "1995-12-16T00:00:00",
+		"Student_ID": "100004407F",
+		"Last_Name": "WALL-WADDELL",
+		"HasCustodyOrder": "N",
+		"Middle_Name": "COADY",
+		"Gender_ID": "M",
+		"CYPC_ID": "N",
+		"EDID": "100004407F",
+		"IsInternationalStudent": "N",
+		"First_Name": "COADY",
+		"Preferred_Name": "COADY",
+		"Last_Update_Date": "2021-11-03T00:01:04.303"
+	},
+	{
+		"ABS_Country_Of_Birth_ID": "9231",
+		"HasInterventionOrder": "N",
+		"Birth_Date": "1996-01-16T00:00:00",
+		"Student_ID": "100007839M",
+		"Last_Name": "HARRISON-BORGAS",
+		"HasCustodyOrder": "N",
+		"Middle_Name": "EBONY",
+		"Gender_ID": "F",
+		"CYPC_ID": "N",
+		"EDID": "100007839M",
+		"IsInternationalStudent": "N",
+		"First_Name": "EBONY",
+		"Preferred_Name": "EBONY",
+		"Last_Update_Date": "2021-11-03T00:01:04.303"
+	},
+	{
+		"ABS_Country_Of_Birth_ID": "9232",
+		"HasInterventionOrder": null,
+		"Birth_Date": "1994-12-07T00:00:00",
+		"Student_ID": "100019887F",
+		"Last_Name": "WELLER",
+		"HasCustodyOrder": "N",
+		"Middle_Name": "MONIEK",
+		"Gender_ID": "F",
+		"CYPC_ID": "N",
+		"EDID": "100019887F",
+		"IsInternationalStudent": "N",
+		"First_Name": "MONIEK",
+		"Preferred_Name": "MONIEK",
+		"Last_Update_Date": "2021-07-20T07:51:28.653"
+	}
+]

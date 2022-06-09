@@ -1,0 +1,41 @@
+[
+	{
+		"Campus_Org_Unit_ID": "0663",
+		"Enrolment_Status_ID": "L",
+		"Disability_Status_ID": "N",
+		"Roll_Class": "LFT03",
+		"Multiple_Enrolment_RN": 1,
+		"Enrolment_ID": "013500021-0663",
+		"Student_ID": "013500021",
+		"Org_Unit_ID": "0663",
+		"Year_Level_ID": "03",
+		"Date_Enrolled": "2000-07-25T00:00:00",
+		"Date_Left": "2003-04-28T00:00:00"
+	},
+	{
+		"Campus_Org_Unit_ID": "0311",
+		"Enrolment_Status_ID": "L",
+		"Disability_Status_ID": "N",
+		"Roll_Class": "LFT20",
+		"Multiple_Enrolment_RN": 1,
+		"Enrolment_ID": "02392092-0311",
+		"Student_ID": "02392092",
+		"Org_Unit_ID": "0311",
+		"Year_Level_ID": "08",
+		"Date_Enrolled": "1996-09-25T00:00:00",
+		"Date_Left": "2000-12-22T00:00:00"
+	},
+	{
+		"Campus_Org_Unit_ID": "0311",
+		"Enrolment_Status_ID": "L",
+		"Disability_Status_ID": "N",
+		"Roll_Class": "LFT02",
+		"Multiple_Enrolment_RN": 1,
+		"Enrolment_ID": "031100002-0311",
+		"Student_ID": "031100002",
+		"Org_Unit_ID": "0311",
+		"Year_Level_ID": "02",
+		"Date_Enrolled": "2000-03-13T00:00:00",
+		"Date_Left": "2002-01-28T00:00:00"
+	}
+]

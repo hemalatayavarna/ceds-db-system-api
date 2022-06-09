@@ -1,0 +1,38 @@
+{
+	"resultSet1": [
+		{
+			"Local Account": "0000-0000-1101-06",
+			"Month": "202109",
+			"Scenario": "ACT",
+			"Consolidation Node": "99",
+			"IC and Related Parties": "TP",
+			"Investment Cost": "99",
+			"GL Source": "EDSAS",
+			"Layer": "01",
+			"Company": "_",
+			"Movement": "99_CLO",
+			"Local Account Category": "05",
+			"Local Trial Balances": 11818.53,
+			"Reporting Unit": "DEPT",
+			"Local Account Code": "1101",
+			"Local Account Descr": "BANK ACCOUNT- OPERATING"
+		},
+		{
+			"Local Account": "0000-0000-1102-06",
+			"Month": "202109",
+			"Scenario": "ACT",
+			"Consolidation Node": "99",
+			"IC and Related Parties": "TP",
+			"Investment Cost": "99",
+			"GL Source": "EDSAS",
+			"Layer": "01",
+			"Company": "_",
+			"Movement": "99_CLO",
+			"Local Account Category": "01",
+			"Local Trial Balances": -5866.16,
+			"Reporting Unit": "DEPT",
+			"Local Account Code": "1102",
+			"Local Account Descr": "BANK ACCOUNT- SASIF"
+		}
+	]
+}

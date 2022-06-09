@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="impl-process-trial-balance-requests-test-suite.xml" />
+	<munit:before-test name="ceds-db-system-api-test-suiteBefore_Test" doc:id="daa73e13-8114-4f6e-8fd1-415a50208bbf" >
+		<munit-tools:mock-when doc:name="Mock JMS queue" doc:id="4d6b27bc-402c-41dd-b80a-b217b93d1675" processor="jms:publish">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Publish To Error MQ" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:mock-when>
+	</munit:before-test>
+	<munit:test name="impl-process-trial-balance-requests-test-suite-impl-process-trial-balance-requests:get-trialbalance:subflowTest" doc:id="bd36e618-2397-41ad-acae-ba38b24b1e10" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Select  CEDS Record Count" doc:id="06aece40-6146-4e14-b98f-56d6f5b5a3c2" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-trial-balance-count.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Select CEDS Trial Balance" doc:id="e49f36a9-f8ba-4f1e-8cfa-ddba31d91b76" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Stored procedure" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-trial-balance-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3685f95a-0fa7-4e4b-9f7f-35de0b3e07a8" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-trial-balance-api-valid-query-params.json')]" mediaType="application/json" />
+
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\reports\trial-balance:ceds-db-system-api-config" doc:id="8addc525-6ea6-41c8-abe4-306e4c049443" name="get:\reports\trial-balance:ceds-db-system-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log End Database Trial Balance" doc:id="eab3134b-e480-4258-9617-0862326b2274" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Trial Balance Requests" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert payload is Expected" doc:id="33373049-7c7f-4087-af31-c8dc52953b11" message="Actual response matches with the Expected response">
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-trial-balance-valid-response.json","application/json")]]]></munit-tools:that>
+			</munit-tools:assert>						
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-transactions-requests-test-suite-impl-process-transactions-requests:get-transactions:subflowTest" doc:id="718e95ea-343e-4240-a5e2-a06c6cbbc57a" description="Test">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Select  CEDS Record Count" doc:id="72031add-07a2-4234-9ff3-7f1a977fb54b" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-transactions-count.json')]" mediaType="application/json" />
+					<munit-tools:variables >
+						<munit-tools:variable key="unfilteredRowCount" value="#['2']" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Select CEDS Transactions" doc:id="4f3a3fa9-653c-4e5b-9aa9-115bd745bcc3" processor="db:select">
+					<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Select Transactions Data" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-transactions-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="1a9187ed-2376-4c2e-b058-8dd742967b29">
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-transactions-api-valid-query-params.json')]" mediaType="application/json" />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref-to-get:\reports\trial-balance\transactions:ceds-db-system-api-config" doc:id="f2bcdf14-baf9-4487-84df-27d715233456" name="get:\reports\trial-balance\transactions:ceds-db-system-api-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:verify-call doc:name="Verify Log End Database Transactions" doc:id="78513e87-a20a-432b-8730-a47540f8d8ad" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End CEDS Database Transactions" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:assert doc:name="Assert payload is Expected" doc:id="f2669b81-6ec4-4c22-a17a-3ad517cd661a" message="Actual response matches with the Expected response">
+					<munit-tools:that><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-transactions-valid-response.json","application/json")]]]></munit-tools:that>
+				</munit-tools:assert>
+			</munit:validation>
+		</munit:test>
+	<munit:test name="impl-process-students-requests-test-suite-impl-process-students-requests:get-students:json-type:subflowTest" doc:id="cdb5c974-77e4-4cde-9a0e-c3925d60d4ac">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Select Countries Names" doc:id="efe3e15b-8dc9-4343-a94d-021c0132da4b" processor="db:select">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Select Countries Names" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-countries-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Select Students Enrolement" doc:id="14424d4a-6f92-436f-852c-556d43850a4e" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Students Enrolement" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-valid-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a032f745-c768-4331-bd66-50e6ccb419a3" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-students-api-valid-query-params-json.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\students:ceds-db-system-api-config" doc:id="9be7ca6c-4f10-4bf8-9c3a-0423cd100664" name="get:\students:ceds-db-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="34cebd65-b3f2-415f-805c-899706da4d82" processor="logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="d5e28fb2-62e0-4763-8cba-f342fcf662f8" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="d2b6be18-fba0-4982-aa93-72f014590739" processor="logger" atLeast="2">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Students Implementation" doc:id="39802c51-6730-46a1-a84f-72bf90f1ecd0" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Students Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Student details" doc:id="0813d242-81cd-4fac-a871-a70fbf9cefa0" processor="logger" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Student Details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="dfc329a3-1fda-4208-9142-a3a9930d8904" message="Actual response matches with the Expected response" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-students-api-valid-response-json-type.json","application/json")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-students-requests-test-suite-impl-process-students-requests:get-students:csv-type:subflowTest" doc:id="05b4b954-a869-43c5-85e3-3db4d174c87c" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Select Countries Names" doc:id="974f3074-b11d-4b89-ade3-ee48b725bce8" processor="db:select">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Select Countries Names" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-countries-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Select Students Enrolement" doc:id="04c30c88-ee24-45c6-993b-b9fcbb7e7e19" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Students Enrolement" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-valid-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ee08098f-e601-44be-9bdd-c732cf481832" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-students-api-valid-query-params-csv.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\students:ceds-db-system-api-config" doc:id="c39528ab-9e34-4e7b-9703-fdac70ba1fef" name="get:\students:ceds-db-system-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="4fb83f9a-e00d-4c5b-9530-f925afd332eb" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="6b6030d1-4621-4a9a-b2c0-e8174f344df2" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="1777571f-8f89-4683-893f-dde922b0272c" processor="logger" atLeast="2">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End CEDS Database" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Log End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Students Implementation" doc:id="9baf8c75-91f5-42ed-ac31-015d3dcfdc21" processor="logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log End Get Students Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Student details" doc:id="9da9c248-4c6d-4823-afe2-42c445cd4bc1" processor="logger" atLeast="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log End Get Student Details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="a2dfeeb5-b584-4b7a-afdb-0ddd846a5e7c" message="Actual response matches with the Expected response" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-students-api-valid-response-csv-type.csv","application/csv")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-guardians-requests-test-suite-impl-process-guardians-requests:get-guardians:json-type:subflowTest" doc:id="b39b529f-9a11-4ca8-b02c-e9b157b041e3" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Select Guardians Enrolement" doc:id="deab01a8-3265-4039-b268-209025f566e9" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Guardian Enrolement" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-guardians-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3406ec5d-96a2-4fcd-9012-6b752b3d6762" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-guardians-api-valid-query-params-json.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\students\guardians:ceds-db-system-api-config" doc:id="3c0533fc-f5ac-446b-bb2e-0a1b4d4f6020" name="get:\students\guardians:ceds-db-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="5dd3fca0-e4a6-40f4-9b6b-8a1604f5afef" processor="logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="986e0008-8c0e-4aca-a0bf-eff6736cdad3" processor="logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="4b5f5a5d-702e-4e37-a440-e333005f9e99" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Guardians Implementation" doc:id="d645ad0a-d8db-448a-a64c-045a28ddedd9" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Guardians Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Guardians Details" doc:id="0bea01f8-13ac-4ffe-8031-2a9cb1cf96f2" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Guardians Details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="33bc963c-5375-414c-a5f5-223c6190698f" message="Actual response matches with the Expected response" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-guardians-api-valid-response-json-type.json","application/json")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-guardians-requests-test-suite-impl-process-guardians-requests:get-guardians:csv-type:subflowTest" doc:id="a4450b28-8349-4613-bde7-2967f22b499f">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Select Guardians Enrolement" doc:id="f9777e8f-1f97-43c1-82a4-c52e8bbc5b82" processor="db:select">
+					<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Guardian Enrolement" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+						<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-guardians-response.json')]" mediaType="application/json" />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="5be4f155-b887-4ba7-aafe-2bf96b0f7e88">
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-guardians-api-valid-query-params-csv.json')]" mediaType="application/json" />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref-to-get:\students\guardians:ceds-db-system-api-config" doc:id="fa1e06f9-46fe-4cfe-a504-2a415f10f2c2" name="get:\students\guardians:ceds-db-system-api-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="1d8a77f6-f666-4ab0-a3a6-b26a392ba3a5" processor="logger">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+					</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="e243a3fa-8c06-4ca3-960a-2e18b94145de" processor="logger">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+					</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="249202a7-a59b-4614-8e03-54b2260a2e40" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Guardians Implementation" doc:id="b882267f-2a1b-42e4-922e-00ff9eb92a5f" processor="logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log End Get Guardians Implementation" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Log End Get Guardians Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Guardians Details" doc:id="1c0db09d-5166-4114-bc3f-726e872eeffc" processor="logger">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Log End Get Guardians Details" attributeName="doc:name" />
+					</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="4501988f-7804-47c8-ba3d-61d78db084c5" message="Actual response matches with the Expected response">
+					<munit-tools:that><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-guardians-api-valid-response-csv-type.csv","application/csv")]]]></munit-tools:that>
+				</munit-tools:assert>
+			</munit:validation>
+		</munit:test>
+	<munit:test name="ceds-db-system-api-test-suiteTest" doc:id="3b2ba3ed-e791-45b0-85f0-6c40080ed25d">
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref-to-get:\health:ceds-db-system-api-config" doc:id="83368007-6b47-462c-88cf-d6b2cdd6d502" name="get:\health:ceds-db-system-api-config" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="45963aa7-94c8-4e0e-bc76-279961e1c76f" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-transactions-requests-test-suite-impl-process-transactions-requests:get-empty-payload:subflowTest" doc:id="9550803d-322f-426a-b776-9f8940836cf8" description="Test">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Select CEDS Record Count" doc:id="03a864c7-c941-4bfc-bb1b-80d5a0012706" processor="db:select">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+					</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-transactions-count.json')]" mediaType="application/json" />
+					<munit-tools:variables>
+						<munit-tools:variable key="unfilteredRowCount" value="#['2']" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+				</munit-tools:mock-when>
+				<munit-tools:mock-when doc:name="Select CEDS Transactions" doc:id="5c7b16da-9c14-408a-a97f-1382a46e59c4" processor="db:select">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Select Transactions Data" attributeName="doc:name" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="d1bcc8d6-df59-42d5-a9ab-a50efaabbbc0">
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-transactions-api-invalid-query-params.json')]" mediaType="application/json" />
+				</munit:set-event>
+				<flow-ref doc:name="Flow-ref-to-get:\reports\trial-balance\transactions:ceds-db-system-api-config" doc:id="6706ddc4-371f-4d94-a323-673416e0bb80" name="get:\reports\trial-balance\transactions:ceds-db-system-api-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:verify-call doc:name="Verify Log End Database Transactions" doc:id="856943a2-b9b6-43ea-a8e9-58958f7c2f62" processor="logger" atLeast="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Log End Transactions Requests" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:assert doc:name="Assert payload is Expected" doc:id="a8d42e0d-ab9c-4fd9-b7f0-6ca0b562ec25" message="Actual response matches with the Expected response">
+					<munit-tools:that><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-transactions-empty-response.json","application/json")]]]></munit-tools:that>
+				</munit-tools:assert>
+			</munit:validation>
+		</munit:test>
+	<munit:test name="impl-process-enrolments-requests-test-suite-impl-process-enrolments-requests:get-enrolments:json-type:subflowTest" doc:id="a43d5d50-e885-4812-8d32-a88d33dda4b7" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Select Sites Enrolment" doc:id="e6cda2d3-b9d7-4716-8068-e0d9ea1bf8ec" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Sites Enrolment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-enrolments-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="97a8dd11-10e0-40e5-8a1c-e563c9b16348" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-enrolments-api-valid-query-params-json.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\students\enrolments:ceds-db-system-api-config" doc:id="e9f9460d-e6bc-4375-956b-b19bfdfd2f33" name="get:\students\enrolments:ceds-db-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="d11901c4-2d01-4d24-9eb2-0d16b24ad104" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="2e1fab03-193c-4912-851c-2dfa39c24954" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="27ff2f94-de14-4cfb-97ed-364f89ce792e" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Enrolments Implementation" doc:id="50bc4661-338a-4586-acde-cc857ed0df77" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Enrolments Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Enrolments Details" doc:id="dc377675-e3c8-4bf2-8c7a-3866ffef59df" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Enrolments Details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="b9364064-d8dd-4195-8c55-23af2a0765f0" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-students-enrolments-api-valid-response-json-type.json","application/json")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-process-enrolments-requests-test-suite-impl-process-enrolments-requests:get-enrolments:csv-type:subflowTest" doc:id="992607fe-0c0a-40b0-b5b7-7d2fb21a39ff" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Select Sites Enrolment" doc:id="9d301a9e-b8f1-4390-afb6-80a7064361a4" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select Sites Enrolment" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('examples/ceds-db-students-enrolments-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="85372daa-123f-49dd-a6b0-c225a5465190" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('examples/get-ceds-db-enrolments-api-valid-query-params-csv.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref-to-get:\students\enrolments:ceds-db-system-api-config" doc:id="9e7d3406-6589-42b1-a46b-94d4d1b2970b" name="get:\students\enrolments:ceds-db-system-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Log Query Parameters" doc:id="1d008db0-d542-4bbc-b2cd-6d6662ec069d" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Query Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log Headers Parameters" doc:id="a8b84127-67ea-4119-bff7-0109c8aa641b" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Headers Parameters" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End CEDS Database" doc:id="c22487bd-5a7f-46f0-9b9a-f0feee681f16" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End CEDS Database" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Enrolments Implementation" doc:id="a984aeeb-db41-4346-a47a-f2811482c624" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Enrolments Implementation" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Log End Get Enrolments Details" doc:id="0f94dd5c-b816-4593-ad39-0e918fd964fd" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Get Enrolments Details" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload Is Expected" doc:id="842ece78-ab3f-4d3b-82c3-815d0c64be2a" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalToResource("examples/get-ceds-db-students-enrolments-api-valid-response-csv-type.csv","application/csv")]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+
+</mule>

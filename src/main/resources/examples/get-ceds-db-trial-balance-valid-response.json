@@ -1,0 +1,36 @@
+[
+    {
+        "month": "202110",
+        "scenario": "ACT",
+        "consolidationNode": "99",
+        "reportingUnit": "DEPT",
+        "localAccount": "001-71111-0104",
+        "icRelatedParties": "TP",
+        "investmentCost": "99",
+        "company": "_",
+        "glSource": "EDSAS",
+        "layer": "01",
+        "movement": "99_CLO",
+        "localAccountCategory": "05",
+        "localTrialBalances": 2213040.1800,
+        "localAccountCode": "71111",
+        "localAccountDescription": "SALARIES AND WAGES - TEACHERS"
+    },
+    {
+        "month": "202110",
+        "scenario": "ACT",
+        "consolidationNode": "99",
+        "reportingUnit": "DEPT",
+        "localAccount": "001-71111-0106",
+        "icRelatedParties": "TP",
+        "investmentCost": "99",
+        "company": "_",
+        "glSource": "EDSAS",
+        "layer": "01",
+        "movement": "99_CLO",
+        "localAccountCategory": "05",
+        "localTrialBalances": 2469069.5300,
+        "localAccountCode": "71111",
+        "localAccountDescription": "SALARIES AND WAGES - TEACHERS"
+    }
+]

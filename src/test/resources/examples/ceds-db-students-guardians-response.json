@@ -1,0 +1,68 @@
+[
+	{
+		"Guardian_No": 1,
+		"Family_Parent_Guardian_Family_Name": "ABEL",
+		"Family_Parent_Guardian_Given_Names": "DEBBIE LEAH",
+		"Family_Parent_Guardian_Title": "MS",
+		"Family_Parent_Guardian_Phone": null,
+		"Family_Parent_Guardian_ID": "013500021|1|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "013500021",
+		"Family_Parent_Guardian_Email": null
+	},
+	{
+		"Guardian_No": 2,
+		"Family_Parent_Guardian_Family_Name": "SALMON",
+		"Family_Parent_Guardian_Given_Names": "DANIEL",
+		"Family_Parent_Guardian_Title": "MR",
+		"Family_Parent_Guardian_Phone": null,
+		"Family_Parent_Guardian_ID": "013500021|2|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "013500021",
+		"Family_Parent_Guardian_Email": null
+	},
+	{
+		"Guardian_No": 1,
+		"Family_Parent_Guardian_Family_Name": "SIDLER",
+		"Family_Parent_Guardian_Given_Names": "ROBERT",
+		"Family_Parent_Guardian_Title": "MR",
+		"Family_Parent_Guardian_Phone": null,
+		"Family_Parent_Guardian_ID": "02392092|1|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "02392092",
+		"Family_Parent_Guardian_Email": null
+	},
+	{
+		"Guardian_No": 2,
+		"Family_Parent_Guardian_Family_Name": null,
+		"Family_Parent_Guardian_Given_Names": null,
+		"Family_Parent_Guardian_Title": null,
+		"Family_Parent_Guardian_Phone": null,
+		"Family_Parent_Guardian_ID": "02392092|2|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "02392092",
+		"Family_Parent_Guardian_Email": null
+	},
+	{
+		"Guardian_No": 1,
+		"Family_Parent_Guardian_Family_Name": "GOLDSMITH",
+		"Family_Parent_Guardian_Given_Names": "JUDITH ADELE",
+		"Family_Parent_Guardian_Title": "MRS",
+		"Family_Parent_Guardian_Phone": "0885754249",
+		"Family_Parent_Guardian_ID": "031100002|1|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "031100002",
+		"Family_Parent_Guardian_Email": null
+	},
+	{
+		"Guardian_No": 2,
+		"Family_Parent_Guardian_Family_Name": "GOLDSMITH",
+		"Family_Parent_Guardian_Given_Names": "PHILLIP ROSS",
+		"Family_Parent_Guardian_Title": "MR",
+		"Family_Parent_Guardian_Phone": "0885754249",
+		"Family_Parent_Guardian_ID": "031100002|2|1",
+		"Family_Parent_Guardian_Mobile": null,
+		"Student_ID": "031100002",
+		"Family_Parent_Guardian_Email": null
+	}
+]

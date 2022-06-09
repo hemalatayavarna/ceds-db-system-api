@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="sys-ceds-students-database:get-students:subflow" doc:id="aaf1cd59-1268-4169-b9b7-0a17a8e21e57" >
+		<logger level="INFO" doc:name="Log Start CEDS Database" doc:id="3d30f157-e255-4fa2-95ae-2c93232e28f6" message="Start CEDS Database"/>
+		<ee:transform doc:name="Set Variable: sqlQuery" doc:id="0520a990-5728-46f3-b56b-ec8985a3f6db" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/ceds-students-query.dwl" variableName="sqlQuery" />
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Students Enrolement" doc:id="31445b96-cd30-4299-b204-a88d6d7f3cf9" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}">
+			<reconnect-forever frequency="${ceds.db.reconnection.frequency}"/>
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database" doc:id="7858d43f-ea4f-4964-a3f0-635621de88da" message="End CEDS Database"/>
+	</sub-flow>
+	<sub-flow name="sys-ceds-students-database:get-countries:subflow" doc:id="0b9e80ba-ae20-43ae-8ab2-ff1f4d6a8f25" >
+		<logger level="INFO" doc:name="Log Start CEDS Database" doc:id="ca6d36c1-e3ac-498f-bc54-41a83e9b186e" message="Start CEDS Database"/>
+		<ee:transform doc:name="Set Variable: sqlQuery" doc:id="adcb1cfa-e139-493b-a76e-395a8112d7ad" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/ceds-country-query.dwl" variableName="sqlQuery" />
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Countries Names" doc:id="d016a230-8d01-4297-b010-9608a38cda84" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}">
+			<reconnect-forever frequency="${ceds.db.reconnection.frequency}" />
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database" doc:id="dc02c482-4aee-4fac-932c-64de45812023" />
+	</sub-flow>
+	<sub-flow name="sys-ceds-students-database:get-guardians:subflow" doc:id="1df5c614-223d-4aa9-b542-271bf61b7102" >
+		<logger level="INFO" doc:name="Log Start CEDS Database" doc:id="397d132c-6a9d-4ee3-a3a1-c894bbf13312" message="Start CEDS Database" />
+		<ee:transform doc:name="Set Variable: sqlQuery" doc:id="5a531b9b-143a-482e-8e1b-f994b069c889" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/ceds-guardians-query.dwl" variableName="sqlQuery" />
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Guardian Enrolement" doc:id="b4211d09-ceb7-487c-b3e0-9376977b3629" config-ref="Database_Config" queryTimeout="${ceds.db.select.timeout}" >
+			<reconnect-forever frequency="${ceds.db.reconnection.frequency}" />
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="End CEDS Database" doc:id="47a02e5d-b741-4471-a91c-1750c4a44249" message="End CEDS Database" />
+	</sub-flow>
+	<sub-flow name="sys-ceds-students-database:get-enrolments:subflow" doc:id="7dfb886f-3fa6-4777-88d3-64053d3c2283" >
+		<logger level="INFO" doc:name="Log Start CEDS Database" doc:id="fed41c58-9bca-4029-b54b-eaa4977737d2" message="Start CEDS Database" />
+		<ee:transform doc:name="Set Variable: sqlQuery" doc:id="e0391537-a9c4-4d04-9100-34bfe96ba96e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/ceds-sites-query.dwl" variableName="sqlQuery" />
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Sites Enrolment" doc:id="85b56f87-6c37-4ef5-980e-3e2e12b19ef1" config-ref="Database_Config">
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Log End CEDS Database" doc:id="dd1abae3-1436-4aff-8de6-f168a8455dab" message="End CEDS Database" />
+	</sub-flow>
+	
+	</mule>

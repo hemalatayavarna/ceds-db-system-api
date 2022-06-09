@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="ceds-db-system-api-main">
+		<http:listener
+			path="${api.http.path}${api.http.version}"
+			config-ref="ceds-system-api-httpListenerConfig"
+			doc:name="HTTP Listener for CEDS DB System API">
+			<http:response
+				statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:router config-ref="ceds-db-system-api-config" />
+		<error-handler ref="api-kit-error-handler" />
+	</flow>
+	<flow name="get:\health:ceds-db-system-api-config" doc:id="0d594040-50a2-4f55-83cb-bc9c6d45b013">
+		<ee:transform
+			xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+			xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+			doc:name="Get Health Report">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  name: p('system.context'),
+  status: "OK",
+  timestamp: (now() as DateTime) >> p('property.timezone')
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="business-error-handler" />
+	</flow>
+	<flow name="get:\reports\trial-balance:ceds-db-system-api-config"
+		doc:id="81514378-b1f8-4945-909a-ef312f1e7e44">
+		<logger level="INFO"
+			doc:name="Log Start Get TrialBalance Details"
+			doc:id="45a5cc31-209b-433e-892f-2542d91e0a0a"
+			message="Start Get TrialBalance Details" />
+		<flow-ref doc:name="ceds-db-system-api:log:subflow" doc:id="bd301241-078d-4171-b62c-70d1dd8c3bea" name="ceds-db-system-api:log:subflow"/>
+		<flow-ref
+			doc:name="impl-process-trial-balance-requests:get-trialbalance:subflow"
+			doc:id="b907ddf5-df72-472b-a731-a370f95c7004"
+			name="impl-process-trial-balance-requests:get-triabalance:subflow" />
+		<logger level="INFO"
+			doc:name="Log End Get TrialBalance Details"
+			doc:id="671d3243-b2f3-4c2a-8068-9d87081945c2"
+			message="End Get TrialBalance Details" />
+		<error-handler ref="business-error-handler" />
+	</flow>
+	<flow
+		name="get:\reports\trial-balance\transactions:ceds-db-system-api-config"
+		doc:id="451423e2-f08e-458a-aead-5da92557cbcd">
+		<logger level="INFO"
+			doc:name="Log Start Get Transaction Details"
+			doc:id="bb9712d9-5dea-4305-92de-9f52d07dc902"
+			message="Start Get Transaction Details" />
+		<flow-ref doc:name="ceds-db-system-api:log:subflow" doc:id="81722bf4-464f-4663-8543-a418fb475c3a" name="ceds-db-system-api:log:subflow"/>
+		<flow-ref
+			doc:name="impl-process-transactions-requests:get-transactions:subflow"
+			doc:id="2f67dd0b-0031-445e-86b7-3bdfddbaae83"
+			name="impl-process-transactions-requests:get-transactions:subflow" />
+		<logger level="INFO" doc:name="Log End Get Transaction Details"
+			doc:id="1d576598-b242-42be-ba00-d76d1ccc2579"
+			message="Log End Get Transaction Details" />
+		<error-handler ref="business-error-handler" />
+	</flow>
+	<sub-flow name="ceds-db-system-api:log:subflow" doc:id="b6d68501-8a24-4296-ab8a-4698b00b1f89" >
+		<logger level="INFO" doc:name="Logging Query and Headers" doc:id="42a0f077-4fd9-4d30-9f3e-a6d76e0c0d63" message="Logging Query and Headers"/>
+		<logger level="INFO" doc:name="Log Query Parameters" doc:id="ef89dd36-d777-4c36-be8f-04d65628aa41" message='#[attributes.queryParams]' />
+		<logger level="INFO" doc:name="Log Headers Parameters" doc:id="bec7afd2-95b9-47af-bc1b-ad0fd57449a2" message="#[attributes.headers]" />
+	</sub-flow>
+	<flow name="get:\students:ceds-db-system-api-config" doc:id="1bd22f9c-e364-4561-9965-6124cec88928" >
+		<logger level="INFO" doc:name="Log Start Get Student Details" doc:id="2d3121c5-dc93-408e-82e7-56da57b42896" message="Log Start Get Student Details"/>
+		<flow-ref doc:name="ceds-db-system-api:log:subflow" doc:id="fbb951b9-5ba9-4c70-8afd-62f587d7ce59" name="ceds-db-system-api:log:subflow"/>
+		<flow-ref doc:name="impl-process-ceds-students-data-request:students-process:subflow" doc:id="ceb43bc6-e465-4098-9e36-7b1930bef753" name="impl-process-ceds-students-data-request:students-process:subflow"/>
+		<logger level="INFO" doc:name="Log End Get Student Details" doc:id="a2094ca2-2aef-48c2-aa32-6c151e04ad04" message="Log End Get Student Details"/>
+		<error-handler ref="business-error-handler" />
+	</flow>
+	<flow name="get:\students\guardians:ceds-db-system-api-config" doc:id="2a2b5e2f-5a0d-416f-a13d-851016f02ca4" >
+		<logger level="INFO" doc:name="Log Start Get Guardians Details" doc:id="ed5dc154-ae27-4be7-bffe-1c655a790fbe" message="Log Start Get Guardians Details"/>
+		<flow-ref doc:name="ceds-db-system-api:log:subflow" doc:id="3b3a9dbf-f532-4143-ad49-5d488c9f7a5e" name="ceds-db-system-api:log:subflow" />
+		<flow-ref doc:name="impl-process-ceds-guardians-data-request:guardians-process:subflow" doc:id="afebbd56-9149-45af-877e-2f92ef708c5c" name="impl-process-ceds-guardians-data-request:guardians-process:subflow" />
+		<logger level="INFO" doc:name="Log End Get Guardians Details" doc:id="382db1b7-c00d-46fa-9012-82b2ef07aa18" message="Log End Get Student Details" />
+		<error-handler ref="business-error-handler" />
+	</flow>
+	<flow name="get:\students\enrolments:ceds-db-system-api-config" doc:id="52e0b577-4627-4d1b-bdaa-1c6671165771" >
+		<logger level="INFO" doc:name="Log Start Get Enrolments Details" doc:id="77e9e573-ff4b-4822-85d2-1df5b837165b" message="Start Get Enrolments Details"/>
+		<flow-ref doc:name="ceds-db-system-api:log:subflow" doc:id="d9c28853-0e8a-483c-ba5c-a9af84647c91" name="ceds-db-system-api:log:subflow" />
+		<flow-ref doc:name="impl-process-ceds-enrolments-data-request:enrolments-process:subflow" doc:id="9422aaa5-b8a8-4d69-b41e-cc8c5e60e536" name="impl-process-ceds-enrolments-data-request:enrolments-process:subflow"/>
+		<logger level="INFO" doc:name="Log End Get Enrolments Details" doc:id="e8d75778-fa8d-4c90-a694-4dbdf5f6b674" message="End Get Enrolments Details" />
+		<error-handler ref="business-error-handler" />
+	</flow>
+	
+</mule>

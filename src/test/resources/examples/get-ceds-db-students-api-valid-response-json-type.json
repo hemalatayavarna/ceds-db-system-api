@@ -1,0 +1,47 @@
+[
+	{
+		"edId": "100004407F",
+		"lastName": "WALL-WADDELL",
+		"middleName": "COADY",
+		"firstName": "COADY",
+		"preferredName": "COADY",
+		"gender": "Male",
+		"birthDate": "1995-12-16T00:00:00",
+		"cypc": false,
+		"iesFlag": false,
+		"hasCustodyOrder": false,
+		"hasInterventionOrder": false,
+		"birthCountry": "ZAMBIA",
+		"lastUpdatedOn": "2021-11-03T00:01:04.303"
+	},
+	{
+		"edId": "100007839M",
+		"lastName": "HARRISON-BORGAS",
+		"middleName": "EBONY",
+		"firstName": "EBONY",
+		"preferredName": "EBONY",
+		"gender": "Female",
+		"birthDate": "1996-01-16T00:00:00",
+		"cypc": false,
+		"iesFlag": false,
+		"hasCustodyOrder": false,
+		"hasInterventionOrder": false,
+		"birthCountry": "ZAMBIA",
+		"lastUpdatedOn": "2021-11-03T00:01:04.303"
+	},
+	{
+		"edId": "100019887F",
+		"lastName": "WELLER",
+		"middleName": "MONIEK",
+		"firstName": "MONIEK",
+		"preferredName": "MONIEK",
+		"gender": "Female",
+		"birthDate": "1994-12-07T00:00:00",
+		"cypc": false,
+		"iesFlag": false,
+		"hasCustodyOrder": false,
+		"hasInterventionOrder": false,
+		"birthCountry": "ZIMBABWE",
+		"lastUpdatedOn": "2021-07-20T07:51:28.653"
+	}
+]

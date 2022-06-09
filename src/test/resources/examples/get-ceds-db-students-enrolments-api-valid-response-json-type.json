@@ -1,0 +1,44 @@
+[
+	{
+		"edId": "013500021",
+		"isPrimary": true,
+		"rollClass": "LFT03",
+		"studentRowNumber": 1,
+		"enrolmentId": "013500021-0663",
+		"enrolmentEndDate": "2003-04-28T00:00:00",
+		"enrolmentStartDate": "2000-07-25T00:00:00",
+		"studentStatus": "L",
+		"orgUnitId": "0663",
+		"isDisable": false,
+		"campusOrgUnitId": "0663",
+		"yearLevel": "Year 3"
+	},
+	{
+		"edId": "02392092",
+		"isPrimary": true,
+		"rollClass": "LFT20",
+		"studentRowNumber": 1,
+		"enrolmentId": "02392092-0311",
+		"enrolmentEndDate": "2000-12-22T00:00:00",
+		"enrolmentStartDate": "1996-09-25T00:00:00",
+		"studentStatus": "L",
+		"orgUnitId": "0311",
+		"isDisable": false,
+		"campusOrgUnitId": "0311",
+		"yearLevel": "Year 8"
+	},
+	{
+		"edId": "031100002",
+		"isPrimary": true,
+		"rollClass": "LFT02",
+		"studentRowNumber": 1,
+		"enrolmentId": "031100002-0311",
+		"enrolmentEndDate": "2002-01-28T00:00:00",
+		"enrolmentStartDate": "2000-03-13T00:00:00",
+		"studentStatus": "L",
+		"orgUnitId": "0311",
+		"isDisable": false,
+		"campusOrgUnitId": "0311",
+		"yearLevel": "Year 2"
+	}
+]

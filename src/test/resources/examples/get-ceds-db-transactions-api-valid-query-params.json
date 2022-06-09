@@ -1,0 +1,9 @@
+{
+	"queryParams": {
+		"year": "2021",
+		"reporting-unit":"0106",
+		"object-code":"71111",
+		"page":"1",
+		"limit":"2"
+	}
+}

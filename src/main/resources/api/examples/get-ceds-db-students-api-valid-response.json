@@ -1,0 +1,17 @@
+[
+	{
+		"edId": "100004407F",
+		"lastName": "WALL-WADDELL",
+		"middleName": "COADY",
+		"firstName": "COADY",
+		"preferredName": "COADY",
+		"gender": "Male",
+		"birthDate": "1995-12-16T00:00:00",
+		"cypc": false,
+		"iesFlag": false,
+		"hasCustodyOrder": false,
+		"hasInterventionOrder": false,
+		"birthCountry": "AUSTRALIA",
+		"lastUpdatedOn": "2021-11-03T00:01:04.303"
+	}
+]

@@ -1,0 +1,4 @@
+edId,lastName,middleName,firstName,preferredName,gender,birthDate,cypc,iesFlag,hasCustodyOrder,hasInterventionOrder,birthCountry,lastUpdatedOn
+100004407F,WALL-WADDELL,COADY,COADY,COADY,Male,1995-12-16T00:00:00,false,false,false,false,ZAMBIA,2021-11-03T00:01:04.303
+100007839M,HARRISON-BORGAS,EBONY,EBONY,EBONY,Female,1996-01-16T00:00:00,false,false,false,false,ZAMBIA,2021-11-03T00:01:04.303
+100019887F,WELLER,MONIEK,MONIEK,MONIEK,Female,1994-12-07T00:00:00,false,false,false,false,ZIMBABWE,2021-07-20T07:51:28.653

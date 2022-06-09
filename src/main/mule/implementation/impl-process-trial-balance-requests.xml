@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow
+		name="impl-process-trial-balance-requests:get-triabalance:subflow"
+		doc:id="fa79199c-438c-4f80-8933-52dfef51c754">
+		<logger level="INFO"
+			doc:name="Log Start Trial Balance Requests"
+			doc:id="c882bede-45ab-4d11-9283-483fcfe40418"
+			message="Log Start Trial Balance Requests" />
+		<ee:transform doc:name="Set Variables: month, year, offset, limit, page"
+			doc:id="c7c2056f-77e6-4dc1-9fb4-1c498ad4a031">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="month"><![CDATA[%dw 2.0
+output application/json
+---
+trim(attributes.queryParams.period) as Number default 0]]></ee:set-variable>
+				<ee:set-variable variableName="year"><![CDATA[%dw 2.0
+output application/json
+---
+trim(attributes.queryParams.year) as Number default 0]]></ee:set-variable>
+<ee:set-variable variableName="offset" ><![CDATA[%dw 2.0
+output application/java
+---
+(trim(attributes.queryParams.page) - 1)*trim(attributes.queryParams.limit)]]></ee:set-variable>
+				<ee:set-variable variableName="limit" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.limit) as Number default 1]]></ee:set-variable>
+				<ee:set-variable variableName="page" ><![CDATA[%dw 2.0
+output application/java
+---
+trim(attributes.queryParams.page) as Number default 1]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+		<flow-ref doc:name="system-ceds-database:get-trialbalance-count:subflow" doc:id="d9e3439e-3d59-4675-813f-9fbc4b4c1862" name="system-ceds-database:get-trialbalance-count:subflow" />
+		<logger level="INFO" doc:name="Log Record Count" doc:id="6337e345-7a39-40cc-984a-d62020b98dfe" message="#['Total Count of Unfiltered Records:$(vars.unfilteredRowCount)']"/>
+		<ee:transform doc:name="Set sqlQueryLimit" doc:id="14f0801a-fcbb-42e6-97df-c292f60b6fa2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sqlQueryLimit" ><![CDATA[%dw 2.0
+output application/java
+---
+if(vars.limit <= 0 and vars.unfilteredRowCount>0)
+  vars.unfilteredRowCount
+else if(vars.limit <= 0 and vars.unfilteredRowCount<=0)
+	1
+else
+  vars.limit]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Set totalPages" doc:id="3832aaf5-0339-45d9-8763-0a8d1ba28c8f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="totalPages" ><![CDATA[%dw 2.0
+output application/java
+var unfilteredRowCount:Number = vars.unfilteredRowCount as Number
+var sqlQueryLimit:Number = vars.sqlQueryLimit as Number
+---
+if ((unfilteredRowCount mod sqlQueryLimit) == 0)
+  unfilteredRowCount / sqlQueryLimit
+else
+  floor(unfilteredRowCount / sqlQueryLimit) + 1]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="2e459bea-86eb-4ee6-9a14-f6c9130dd037" >
+			<when expression="#[vars.page&lt;=vars.totalPages]">
+				<flow-ref doc:name="system-ceds-database:get-trialbalance:subflow" doc:id="d58ed7ef-b0a4-4398-8ed9-7f7b9b4e92b7" name="system-ceds-database:get-trialbalance:subflow"/>
+				<ee:transform doc:name="Generate Response" doc:id="47b1efa2-aa93-41fb-b6c0-f811f1fa079d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json indent = false
+---
+{
+	"_meta": {
+		"pageNumber": vars.page,
+		"limit": vars.limit,
+		"totalRecords": vars.filteredRowCount,
+		"totalPages": vars.totalPages as String {format:"00"} as Number
+	},
+	"payload": payload map ( item , index ) -> {
+		month: item.Month default "",
+		scenario: item.Scenario default "",
+		consolidationNode: item.ConsolidationNode default "",
+		reportingUnit: item.ReportingUnit,
+		localAccount: (item.LocalAccount default ""),
+		icRelatedParties: item.IcRelatedParties default 0,
+		investmentCost: item.InvestmentCost default "",
+		company: item.Company default "",
+		glSource: item.GlSource default "",
+		layer: item.Layer default "",
+		movement: item.Movement default "",
+		localAccountCategory: item.LocalAccountCategory,
+		localTrialBalances: item.LocalTrialBalances default 0,
+		localAccountCode: item.LocalAccountCode default "",
+		localAccountDescription: item.LocalAccountDescription default ""
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Log Page Number Exceeded" doc:id="63c04404-8ec7-4b36-8391-2cad10aad7b4" message="#['The requested page number: $(vars.page) exceeds the total pages: $(vars.totalPages)']"/>
+				<ee:transform doc:name="Generate Empty Payload" doc:id="9aa46cc1-0b44-4576-93c6-8c12fdd1d1e7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"_meta": {
+		"pageNumber": vars.page,
+		"limit": vars.limit,
+		"totalRecords":vars.filteredRowCount as Number
+	},
+	"payload":[]
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Log End Trial Balance Requests"
+			doc:id="815c3af6-eda3-4792-905e-344a9b8315d5"
+			message="Log End Trial Balance Requests" />
+	</sub-flow>
+
+</mule>
